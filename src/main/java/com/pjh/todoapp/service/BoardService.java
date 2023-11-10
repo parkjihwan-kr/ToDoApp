@@ -1,8 +1,9 @@
-package service;
+package com.pjh.todoapp.service;
 
-import com.pjh.board.Entity.Board.Board;
-import com.pjh.board.Entity.Board.BoardRepository;
-import com.pjh.board.util.ApiRequestException;
+
+import com.pjh.todoapp.Entity.board.Board;
+import com.pjh.todoapp.Repository.BoardRepository;
+import com.pjh.todoapp.util.ApiRequestException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;

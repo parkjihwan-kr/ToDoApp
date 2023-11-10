@@ -1,5 +1,6 @@
-package com.pjh.todoapp.Board;
+package com.pjh.todoapp.Repository;
 
+import com.pjh.todoapp.Entity.board.Board;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 

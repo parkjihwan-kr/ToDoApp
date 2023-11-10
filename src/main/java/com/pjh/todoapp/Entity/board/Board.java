@@ -1,9 +1,6 @@
-package com.pjh.todoapp.Board;
+package com.pjh.todoapp.Entity.board;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.PrePersist;
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;

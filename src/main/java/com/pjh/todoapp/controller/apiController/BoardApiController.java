@@ -1,15 +1,15 @@
-package controller.apiController;
+package com.pjh.todoapp.controller.apiController;
 
-import Entity.Board.Board;
-import Entity.Board.dto.BoardDeleteDto;
-import Entity.Board.dto.BoardPostDto;
-import Entity.Board.dto.BoardUpdateDto;
+import com.pjh.todoapp.Entity.board.Board;
+import com.pjh.todoapp.Entity.dto.Board.BoardDeleteDto;
+import com.pjh.todoapp.Entity.dto.Board.BoardPostDto;
+import com.pjh.todoapp.Entity.dto.Board.BoardUpdateDto;
+import com.pjh.todoapp.util.ApiRequestException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import service.BoardService;
-import util.ApiRequestException;
+import com.pjh.todoapp.service.BoardService;
 
 @RequiredArgsConstructor
 @RestController
