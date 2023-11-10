@@ -1,4 +1,4 @@
-package util;
+package com.pjh.todoapp.util;
 import org.springframework.http.HttpStatus;
 
 public class ApiRequestException extends RuntimeException {

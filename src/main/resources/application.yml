@@ -1,1 +1,27 @@
+server:
+  port: 8787
+  servlet:
+    context-path: /
+    encoding:
+      charset: utf-8
+      enabled: true
 
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/todo?allowPublicKeyRetrieval=true
+    username: pjh
+    password: 1234
+
+  jpa:
+    database: mysql
+    hibernate:
+      ddl-auto: update
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    show-sql: true
+    open-in-view: true
+
+jwt:
+  secret:
+    key : 7Iqk7YyM66W07YOA7L2U65Sp7YG065+9U3ByaW5n6rCV7J2Y7Yqc7YSw7LWc7JuQ67mI7J6F64uI64ukLg==
