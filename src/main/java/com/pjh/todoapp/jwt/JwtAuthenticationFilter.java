@@ -1,6 +1,7 @@
 package com.pjh.todoapp.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.pjh.todoapp.Entity.dto.CMRespDto;
 import com.pjh.todoapp.Entity.dto.web.LoginRequestDto;
 import com.pjh.todoapp.Entity.user.UserRoleEnum;
 import com.pjh.todoapp.security.UserDetailsImpl;
@@ -65,9 +66,11 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         log.info("로그인 성공 및 JWT 생성");
         String username = ((UserDetailsImpl) authResult.getPrincipal()).getUsername();
         UserRoleEnum role = ((UserDetailsImpl) authResult.getPrincipal()).getUser().getRole();
-
+        // 로그인 성공 시, 로그인에 성공한 유저의 정보와 JWT를 활용하여 토큰을 발급하고,
+        // 발급한 토큰을 Header에 추가하고 성공했다는 메시지, 상태코드 와 함께 Client에 반환하기
         String token = jwtUtil.createToken(username, role);
         jwtUtil.addJwtToCookie(token, response);
+        // 바뀔 수 있으니 CMRespDto 제네릭타입 ?로 설정
     }
 
     @Override

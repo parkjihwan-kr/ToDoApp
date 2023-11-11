@@ -1,23 +1,29 @@
 package com.pjh.todoapp.controller;
 
+import com.pjh.todoapp.Entity.dto.CMRespDto;
 import com.pjh.todoapp.Entity.dto.web.SignupRequestDto;
 import com.pjh.todoapp.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import java.util.List;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Slf4j
-@Controller
-@RequestMapping("/api")
 @RequiredArgsConstructor
-public class UserController {
+@Controller
+public class AuthController {
 
     private final UserService userService;
 
@@ -30,20 +36,6 @@ public class UserController {
     public String signupPage() {
         return "signup";
     }
+    // 조금 있다 변경
 
-    @PostMapping("/user/signup")
-    public String signup(@Valid SignupRequestDto requestDto, BindingResult bindingResult) {
-        // Validation 예외처리
-        List<FieldError> fieldErrors = bindingResult.getFieldErrors();
-        if(fieldErrors.size() > 0) {
-            for (FieldError fieldError : bindingResult.getFieldErrors()) {
-                log.error(fieldError.getField() + " 필드 : " + fieldError.getDefaultMessage());
-            }
-            return "redirect:/api/user/signup";
-        }
-
-        userService.회원가입(requestDto);
-
-        return "redirect:/api/user/login-page";
-    }
 }

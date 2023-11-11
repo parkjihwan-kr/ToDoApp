@@ -28,7 +28,15 @@
 <body>
 <div id="login-form">
     <div id="login-title">Sign up Select Shop</div>
-
+    <!-- 오류 및 성공 메시지를 표시하기 위한 블록을 추가합니다 -->
+    <div th:if="${signupSuccess != null}" class="success-message">
+        회원가입 성공
+    </div>
+    <div th:if="${errorMap != null}" class="error-message">
+        <p th:each="error : ${errorMap}">
+            <span th:text="${error.value}"></span>
+        </p>
+    </div>
     <form action="/api/user/signup" method="post">
         <div class="login-id-label">Username</div>
         <input type="text" name="username" placeholder="Username" class="login-input-box">
@@ -43,15 +51,6 @@
             <input id="admin-check" type="checkbox" name="admin" onclick="onclickAdmin()" style="margin-top: 40px;">관리자
             <input id="admin-token" type="password" name="adminToken" placeholder="관리자 암호" class="login-input-box" style="display:none">
         </div>
-        <!--<div th:if="${errorMap != null}">
-            <div class="alert alert-danger">
-                <ul>
-                    <li th:each="entry : ${errorMap}">
-                        <span th:text="${entry.key} + ': ' + ${entry.value}"></span>
-                    </li>>
-            </ul>
-            </div>
-        </div>-->
         <button id="login-id-submit">회원 가입</button>
         <!--<button id="login-id-btn"><a href="login.html">로그인 페이지</a></button>-->
     </form>
