@@ -1,9 +1,31 @@
+let host = 'http://' + window.location.host;
+
 $(document).ready(function() {
+    const auth = getToken();
+    $('.dropdown-toggle').dropdown();
     $('#updateButton').on('click', updateModal);
     $('#deleteButton').on('click', deleteModal);
     // 해당 버튼 클릭시 모달을 열어줍니다.
 });
+
+function getToken() {
+    let auth = Cookies.get('Authorization');
+    console.log(auth);
+    if(auth === undefined) {
+        return '';
+    }
+
+    return auth;
+}
+
 // contents는 null일 수 있게 설계 되었습니다.
+function logout() {
+    // 토큰 삭제
+    Cookies.remove('Authorization', { path: '/' });
+    window.location.href = host + "/api/user/login-page";
+    // 로그 아웃 버튼
+}
+
 function submitForm() {
     // console.log("submitForm first time!");
     // 게시글 작성에 대한 js

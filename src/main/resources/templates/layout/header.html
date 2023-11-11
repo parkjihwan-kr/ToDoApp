@@ -5,32 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>spring 웹 게시판</title>
 
-    <!-- Bootstrap 및 JavaScript 라이브러리 링크 추가 -->
-    <link rel="stylesheet" type="text/css" href="/css/bootstrap.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="/js/bootstrap.js"></script>
+    <style>
+        .fixed-top {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+        }
+    </style>
 </head>
 <body>
-<header class="tmpHeader">
-    <nav class="navbar navbar-expand-md bg-dark navbar-dark">
-        <!-- Brand -->
-        <a class="navbar-brand" href="/">Annoymous Board</a>
-
-        <!-- 버튼 그룹을 ml-auto 클래스로 오른쪽 정렬 -->
-        <!--<div class="ml-auto button-class">
-            <div class="btn-group">
-                <button type="button" class="btn btn-dark dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    기능 선택
-                </button>
-                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                    <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#postModal" data-whatever="@mdo">게시글 작성하기</a>
-                    <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#selectContents" data-whatever="@mdo">선택한 게시글 조회 기능</a>
-                    <a class="dropdown-item" href="#">게시글 목록 조회 기능</a>
-                    <a class="dropdown-item" href="#">선택한 게시글 수정 기능</a>
-                    <a class="dropdown-item" href="#">선택한 게시글 삭제 기능</a>
-                </div>
-            </div>
-        </div>-->
+<header class="Header">
+    <nav class="navbar navbar-expand-md bg-dark navbar-dark fixed-top">
+        <a class="navbar-brand" href="/" style="margin-left: 10px;">Board Page</a>
+        <div class="btn-group">
+            <button class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#postModal" data-whatever="@mdo">게시글 작성하기</button>
+            <button class="btn btn-dark" onclick="logout()">Logout</button>
+            <!-- modal을 통하여 form을 만들고 form을 통해 글을 게시함.-->
+        </div>
     </nav>
 </header>
 </body>
