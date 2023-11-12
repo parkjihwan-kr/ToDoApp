@@ -8,16 +8,16 @@ import lombok.Setter;
 @Setter
 public class BoardPostDto {
     private String title;
-    private String password;
-    private String username;
+    //private String password;
+    //private String username;
     private String contents;
 
     public Board toEntity(){
         return Board.builder()
                 .title(title)
+                //.username(username)
                 .contents(contents)
-                .username(username)
-                .password(password)
+                //.password(password)
                 .build();
     }
 }

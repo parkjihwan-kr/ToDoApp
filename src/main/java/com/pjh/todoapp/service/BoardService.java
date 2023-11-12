@@ -2,7 +2,11 @@ package com.pjh.todoapp.service;
 
 
 import com.pjh.todoapp.Entity.board.Board;
+import com.pjh.todoapp.Entity.user.User;
 import com.pjh.todoapp.Repository.BoardRepository;
+import com.pjh.todoapp.Repository.UserRepository;
+import com.pjh.todoapp.security.UserDetailsImpl;
+import com.pjh.todoapp.security.UserDetailsServiceImpl;
 import com.pjh.todoapp.util.ApiRequestException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -18,8 +22,19 @@ import java.util.Optional;
 @Service
 public class BoardService {
     private final BoardRepository boardRepository;
+    private final UserRepository userRepository;
     @Transactional
-    public Board 게시글작성(Board board){
+    public Board 게시글작성(Board board, UserDetailsImpl userDetails){
+        String username = userDetails.getUser().getUsername();
+        String userPassword = userDetails.getUser().getPassword();
+
+        Optional<User> userList = userRepository.findByUsername(username);
+        System.out.println("게시글 작성 서비스");
+        userList.stream().forEach((user)->
+                System.out.println("user.getUsername() :"+user.getUsername()+"user.getPassword() : "+user.getPassword())
+        );
+        board.setUsername(username);
+        board.setPassword(userPassword);
         Board boardEntity = boardRepository.save(board);
         List<Board> myBoardList = boardRepository.findAll();
         int testId = 3;

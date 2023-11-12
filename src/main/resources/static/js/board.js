@@ -30,27 +30,17 @@ function submitForm() {
     // console.log("submitForm first time!");
     // 게시글 작성에 대한 js
     var title = $('#title').val();
-    var username = $('#username').val();
-    var password = $('#password').val();
     var contents = $('#contents').val();
 
     if(!title){
         alert("Title을 입력해주세요.");
         return;
     }
-    if(!username){
-        alert("Username을 입력해주세요.");
-        return;
-    }
-    if(!password){
-        alert("Password을 입력해주세요.");
-        return;
-    }
     // contents는 생략 가능하게 만듦.
     var data = {
         title: title,
-        username: username,
-        password: password,
+        /*username: username,
+        password: password,*/
         contents: contents
     };
 
@@ -60,10 +50,13 @@ function submitForm() {
         contentType: 'application/json',
         data: JSON.stringify(data)
     }).done(res => {
+        console.log(title);
+        console.log(contents);
         alert("게시글 등록에 성공하셨습니다.");
         window.location.reload();
         $('#postModal').modal('hide');
     }).fail(err=> {
+        console.log("게시글 등록 성공했다는데 왜..?");
         console.log(err);
     });
 }

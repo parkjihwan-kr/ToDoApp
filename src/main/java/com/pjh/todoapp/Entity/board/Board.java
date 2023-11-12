@@ -24,6 +24,7 @@ public class Board {
 
     @Column(nullable = false)
     private String password;
+    // board가 password를 가지고 있는게..? 추후 put, delete작업 할때 삭제 예정
 
     private String contents;
 

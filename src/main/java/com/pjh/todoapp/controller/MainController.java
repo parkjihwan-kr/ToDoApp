@@ -33,6 +33,8 @@ public class MainController {
                                @AuthenticationPrincipal UserDetailsImpl userDetails){
         List<Board> boardList = boardService.게시판모든리스트조회();
         model.addAttribute("boardList", boardList);
+        model.addAttribute("username", userDetails.getUser().getUsername());
+        // hello-card에 username 추가
         return "board/board";
     }
 }
