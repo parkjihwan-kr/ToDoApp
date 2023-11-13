@@ -59,10 +59,14 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     // 인증 처리
     public void setAuthentication(String username) {
         SecurityContext context = SecurityContextHolder.createEmptyContext();
+        // 왜 빈공간을 만들지?
         Authentication authentication = createAuthentication(username);
+        // Authentication 객체에 username은 인증되어진 사용자다, 라는걸 넣어줌
+        // UserDetails userDetails = userDetailsService.loadByUsername(username);을 통해 인증된 사용자임을 증명
         context.setAuthentication(authentication);
-
+        // securityContext에 authentication(인증된 사용자이라는 객체)을 넣어줌
         SecurityContextHolder.setContext(context);
+        //
     }
 
     // 인증 객체 생성

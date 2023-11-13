@@ -15,8 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @RequiredArgsConstructor
 @Service
@@ -46,12 +45,37 @@ public class BoardService {
 
         return boardEntity;
     }
+    @Transactional
+    public Map<String, List<String>> 유저투두카드조회() {
+        Map<String, List<String>> todoUserList = new HashMap<>();
+        List<Board> boards = 게시판모든리스트조회();
+
+        for (Board board : boards) {
+            String username = board.getUsername();
+            String title = board.getTitle();
+
+            todoUserList.computeIfAbsent(username, key -> new ArrayList<>()).add(title);
+        }
+
+        // userTitles 맵의 모든 필드를 출력
+        /*for (Map.Entry<String, List<String>> entry : userTitles.entrySet()) {
+            String username = entry.getKey();
+            List<String> titles = entry.getValue();
+
+            System.out.println("Username: " + username);
+            System.out.println("Titles: " + titles);
+        }*/
+
+        return todoUserList;
+    }
 
     @Transactional
     public List<Board> 게시판모든리스트조회(){
+        // System.out.println("게시판 모든 리스트 조회 서비스");
         Sort sort = Sort.by(Sort.Order.desc("id"));
         // "id"를 기준으로 내림차순 정렬
         List<Board> boardList = boardRepository.findAll(sort);
+        // 이를 통해 해당 username에 대한 title만 뽑아서 버튼형식으로 title을 누르면 detail이 열리는 형태로
         return boardList;
     }
 

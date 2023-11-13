@@ -36,6 +36,5 @@ public class AuthController {
     public String signupPage() {
         return "signup";
     }
-    // 조금 있다 변경
 
 }
