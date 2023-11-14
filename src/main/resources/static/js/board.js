@@ -1,20 +1,23 @@
 let host = 'http://' + window.location.host;
+let updateUserId;  // 전역 변수로 선언
 
 $(document).ready(function() {
     const auth = getToken();
-    $('.dropdown-toggle').dropdown();
+    //console.log("auth : ",auth);
     $('#updateButton').on('click', updateModal);
     $('#deleteButton').on('click', deleteModal);
     // 해당 버튼 클릭시 모달을 열어줍니다.
 });
 
+
 function getToken() {
     let auth = Cookies.get('Authorization');
-    console.log(auth);
+    // 나 인증된 사용자인지?
+    console.log("Is Authenticated:", auth);
+    // BEARER~~~~
     if(auth === undefined) {
         return '';
     }
-
     return auth;
 }
 
@@ -26,11 +29,22 @@ function logout() {
     // 로그 아웃 버튼
 }
 
-function submitForm() {
-    // console.log("submitForm first time!");
+function submitForm(key) {
+    var auth = getToken();
+    console.log("submitForm first time!");
     // 게시글 작성에 대한 js
-    var title = $('#title').val();
-    var contents = $('#contents').val();
+    // console.log("auth : ",auth);
+    // auth를 getToken()에 가져가더라도 여기에 못쓰네? 지역변수라서>??
+
+    var titleElement = document.getElementById("addTitle_" + /*[[${entry.key}]]*/ '');
+    console.log("titleElement : ",titleElement);
+    if (!titleElement) {
+        console.error("ID가 'addTitle" + key + "'인 요소를 찾을 수 없습니다.");
+        return;
+    }
+
+    var title = titleElement.value;
+    //var contents = $('#contents').val();
 
     if(!title){
         alert("Title을 입력해주세요.");
@@ -40,8 +54,8 @@ function submitForm() {
     var data = {
         title: title,
         /*username: username,
-        password: password,*/
-        contents: contents
+        password: password,
+        contents: contents*/
     };
 
     $.ajax({
@@ -51,10 +65,10 @@ function submitForm() {
         data: JSON.stringify(data)
     }).done(res => {
         console.log(title);
-        console.log(contents);
+        //console.log(contents);
         alert("게시글 등록에 성공하셨습니다.");
         window.location.reload();
-        $('#postModal').modal('hide');
+        //$('#postModal').modal('hide');
     }).fail(err=> {
         console.log("게시글 등록 성공했다는데 왜..?");
         console.log(err);
@@ -90,7 +104,7 @@ function openDetailsModal(userId) {
 function openUpdateModal(userId) {
     // 해당 게시글의 수정 모달 열기 js
     updateUserId = userId; // userId를 변수에 저장
-    console.log("updateUserId : ",updateUserId);
+    console.log("updateUserId : ", updateUserId);
     $('#updateModal').modal('show');
 }
 function updateModal() {
@@ -177,5 +191,5 @@ function deleteModal(){
         window.location.reload();
     }).fail(err => {
         alert("게시글 삭제에 실패하셨습니다. 비밀번호를 확인해주세요!");
-    });
+       });
 }

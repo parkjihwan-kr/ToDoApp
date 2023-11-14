@@ -1,8 +1,7 @@
 package com.pjh.todoapp.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.pjh.todoapp.Entity.dto.CMRespDto;
-import com.pjh.todoapp.Entity.dto.web.LoginRequestDto;
+import com.pjh.todoapp.Entity.web.LoginRequestDto;
 import com.pjh.todoapp.Entity.user.UserRoleEnum;
 import com.pjh.todoapp.security.UserDetailsImpl;
 import jakarta.servlet.FilterChain;

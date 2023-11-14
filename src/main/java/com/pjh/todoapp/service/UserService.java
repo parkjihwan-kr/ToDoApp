@@ -1,8 +1,10 @@
 package com.pjh.todoapp.service;
 
-import com.pjh.todoapp.Entity.dto.web.SignupRequestDto;
+import com.pjh.todoapp.Entity.board.Board;
+import com.pjh.todoapp.Entity.web.SignupRequestDto;
 import com.pjh.todoapp.Entity.user.User;
 import com.pjh.todoapp.Entity.user.UserRoleEnum;
+import com.pjh.todoapp.Repository.BoardRepository;
 import com.pjh.todoapp.Repository.UserRepository;
 import com.pjh.todoapp.jwt.JwtUtil;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +12,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service
@@ -17,6 +20,7 @@ import java.util.Optional;
 public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final BoardRepository boardRepository;
     private final JwtUtil jwtUtil;
     private final String ADMIN_TOKEN = "AAABnvxRVklrnYxKZ0aHgTBcXukeZygoC";
     // 관리자 권한 부여, 다른 방식으로 관리자 권한을 부여할 예정
@@ -46,5 +50,20 @@ public class UserService {
         // 사용자 등록
         User user = new User(username, password, email, role);
         userRepository.save(user);
+        long boardUserId = userRepository.findById(user.getId())
+                .orElseThrow(() -> new NoSuchElementException("해당 유저를 찾을 수 없습니다."))
+                .getId();
+        String boardTitle = "test";
+        String boardContents = "test";
+
+        Board board = new Board(boardTitle,boardContents);
+        board.setUser(user);
+        // userId를 넣기 위한 작업
+        boardRepository.save(board);
+    }
+
+    @Transactional
+    public String addTestCard(){
+        return null;
     }
 }

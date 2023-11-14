@@ -25,46 +25,82 @@
             border: 1px solid #e5e5e5; /* 카드 테두리 스타일 */
         }
 
-        .btn-group {
-            margin-top: 10px; /* 버튼 그룹과 카드 간격 */
-        }
-
         .container {
             margin-top: 70px;
+        }
+        .button-group {
+            display: flex;
+            flex-direction: column; /* 세로로 정렬하기 위해 열 방향으로 설정 */
+            gap: 3px; /* 버튼 사이의 간격 조정 */
+            margin-top: 10px; /* 버튼 그룹과 카드 사이의 간격 조정 */
+        }
+
+        .button-group button {
+            border: 1px solid #e5e5e5; /* Add the button border style */
+            width: 100%; /* Make the buttons 100% width of their container */
+            height: 100%; /* Make the buttons take the full height of their container */
+            background-color: white; /* Set the background color to white */
+        }
+
+        .wide-button {
+            width: 300px; /* Adjust the width as needed */
+            /* You can also use percentage values, for example: width: 100%; */
         }
     </style>
 </head>
 <body>
-<div class = "fixed-header">
+<div class="fixed-header">
     <div th:replace="~{layout/header :: header}"></div>
 </div>
-<div class="container">  <!-- 1001로 설정하여 fixed-header 위로 나타납니다. -->
-    <div id="hello-card">
+<div class="container mt-4">
+    <hr/>
+    <hr/>
+    <!--header 부분에 가려서 임시방편으로 hr/hr/-->
+    <div class="hello-card mt-4 mb-4">
         <span th:text="${username}"></span>님! 안녕하세요?
     </div>
     <div class="container">
-        <!--모든 카드리스트 조회-->
-        <div class="card-columns">
-            <div th:each="entry : ${todoUserList}">
+        <div class="row">
+            <!-- 각 유저의 투두 리스트를 나타내는 부분 -->
+            <div th:each="userBoard : ${todoUserList}" class="col-md-4">
                 <div class="card">
-                    <div class="card-body">
-                        <p>Username : <span th:text="${entry.key}"></span></p>
-                        <p>Titles:</p>
-                        <div>
-                            <div th:each="title : ${entry.value}">
-                                <button th:text="${title}" onclick="openDetailsModal('${title}')"></button>
-                            </div>
+                    <div class="card-body text-center">
+                        <p>Username : <span th:text="${userBoard.username}" id="username"></span></p>
+                        <!-- 각 유저의 투두 리스트를 나타내는 부분 -->
+                        <div th:each="board : ${userBoard.boardList}">
+                            <button class="btn btn-primary w-100 mb-1">
+                                <!--위에 들어가야함 th:onclick="openDetailsModal([[${board.id}]])"-->
+                                <span th:text="${board.title}"></span>
+                            </button>
                         </div>
+                        <!-- 유저별로 투두 리스트 추가하는 부분 -->
+                        <button class="btn btn-primary w-100 mb-1" onclick="toggleAddCardForm()">
+                            Add your card!
+                        </button>
+                        <div id="addCardFormContainer" class="border rounded p-3" style="display: none;">
+                            <form id="addCard" method="post" action="/api/user">
+                                <div class="mb-3">
+                                    <input type="text" placeholder="Write your todoList title" class="form-control" required/>
+                                </div>
+                                <div class="mb-3">
+                                    <textarea class="form-control" placeholder="Write your todoList contents"></textarea>
+                                </div>
+                                <button class="btn btn-primary w-100 mb-1" th:onclick="addCard()">Add Card</button>
+                            </form>
+                        </div>
+                        <hr/>
+                        <button class="btn btn-dark w-100 mb-1" th:onclick="openUpdateModal()">Update</button>
+                        <button class="btn btn-dark w-100 mb-1" th:onclick="openDeleteModal()">Delete</button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <!--<button th:onclick="'openDetailsModal(\'' + ${entry.key} + '\')'">Details</button>
-                        <button th:onclick="'openUpdateModal(\'' + ${entry.key} + '\')'">Update</button>
-                        <button th:onclick="'openDeleteModal(\'' + ${entry.key} + '\')'">Delete</button>-->
 </div>
 
+<!--<button th:onclick="'openDetailsModal(\'' + ${entry.key} + '\')'">Details</button>
+                        <button th:onclick="'openUpdateModal(\'' + ${entry.key} + '\')'">Update</button>
+                        <button th:onclick="'openDeleteModal(\'' + ${entry.key} + '\')'">Delete</button>-->
 <!--게시판 글 작성하기 모달, 인증된 사용자만이 모달 접근 가능하게 변경해야함-->
 <div class="modal fade" id="postModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -189,6 +225,7 @@
         </div>
     </div>
 </div>
+<hr/>
 <div th:replace="~{layout/footer :: footer}"></div>
 <script th:src="@{/js/board.js}" type="text/javascript"></script>
 </body>

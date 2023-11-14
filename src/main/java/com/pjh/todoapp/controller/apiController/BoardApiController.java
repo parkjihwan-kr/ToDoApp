@@ -1,9 +1,9 @@
 package com.pjh.todoapp.controller.apiController;
 
 import com.pjh.todoapp.Entity.board.Board;
-import com.pjh.todoapp.Entity.dto.Board.BoardDeleteDto;
-import com.pjh.todoapp.Entity.dto.Board.BoardPostDto;
-import com.pjh.todoapp.Entity.dto.Board.BoardUpdateDto;
+import com.pjh.todoapp.controller.dto.BoardDeleteDto;
+import com.pjh.todoapp.controller.dto.BoardPostDto;
+import com.pjh.todoapp.controller.dto.BoardUpdateDto;
 import com.pjh.todoapp.security.UserDetailsImpl;
 import com.pjh.todoapp.util.ApiRequestException;
 import lombok.RequiredArgsConstructor;
@@ -23,18 +23,16 @@ public class BoardApiController {
     private final BoardService boardService;
 
     @PostMapping("/user")
-    public String writePost(@RequestBody BoardPostDto userPostDto,
+    public String addCard(@RequestBody BoardPostDto userPostDto,
                             @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        log.info("게시글 작성 컨트롤러");
         System.out.println("게시글 작성 컨트롤러");
-        Board board = boardService.게시글작성(userPostDto.toEntity(), userDetails);
+        boardService.카드추가(userPostDto.toEntity(), userDetails);
         return "redirect:/";
     }
 
     @GetMapping("/user/{id}")
     //@ResponseBody
     public Board showDetails(@PathVariable int id){
-        log.info("게시글 작성 컨트롤러");
         System.out.println("showDetails 확인");
         return boardService.게시글조회(id);
     }

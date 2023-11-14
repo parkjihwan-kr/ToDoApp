@@ -1,4 +1,4 @@
-package com.pjh.todoapp.Entity.dto.web;
+package com.pjh.todoapp.Entity.web;
 
 import jakarta.validation.constraints.Pattern;
 import lombok.Getter;

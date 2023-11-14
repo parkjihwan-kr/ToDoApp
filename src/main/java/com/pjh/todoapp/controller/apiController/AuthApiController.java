@@ -1,12 +1,11 @@
 package com.pjh.todoapp.controller.apiController;
 
-import com.pjh.todoapp.Entity.dto.CMRespDto;
-import com.pjh.todoapp.Entity.dto.web.LoginRequestDto;
-import com.pjh.todoapp.Entity.dto.web.SignupRequestDto;
+import com.pjh.todoapp.Entity.CMRespDto;
+import com.pjh.todoapp.Entity.web.LoginRequestDto;
+import com.pjh.todoapp.Entity.web.SignupRequestDto;
 import com.pjh.todoapp.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;

@@ -1,5 +1,8 @@
 package com.pjh.todoapp.Entity.board;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.pjh.todoapp.Entity.TimeStamped;
+import com.pjh.todoapp.Entity.user.User;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -11,28 +14,23 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class Board {
+@JsonIgnoreProperties({"user"})
+public class Board extends TimeStamped {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private long id;
 
     @Column(nullable = false)
     private String title;
 
-    @Column(nullable = false)
-    private String username;
-
-    @Column(nullable = false)
-    private String password;
-    // board가 password를 가지고 있는게..? 추후 put, delete작업 할때 삭제 예정
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "userId")
+    private User user;
 
     private String contents;
 
-    private LocalDateTime createdDate;
-
-
-    @PrePersist            // db에 INSERT되기 직전에 실행
-    public void createDate() {
-        this.createdDate = LocalDateTime.now();
+    public Board(String title, String contents){
+        this.title = title;
+        this.contents = contents;
     }
 }

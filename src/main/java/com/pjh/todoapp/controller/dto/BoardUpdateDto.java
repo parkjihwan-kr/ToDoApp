@@ -1,4 +1,4 @@
-package com.pjh.todoapp.Entity.dto.Board;
+package com.pjh.todoapp.controller.dto;
 
 import com.pjh.todoapp.Entity.board.Board;
 import lombok.Getter;
@@ -8,14 +8,10 @@ import lombok.Setter;
 @Setter
 public class BoardUpdateDto {
     private String updateTitle;
-    private String updatePassword;
-    private String updateUsername;
     private String updateContents;
 
     public Board toEntity() {
         return Board.builder()
-                .username(updateUsername)
-                .password(updatePassword)
                 .title(updateTitle)
                 .contents(updateContents)
                 .build();

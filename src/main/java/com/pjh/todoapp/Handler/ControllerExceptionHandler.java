@@ -1,6 +1,6 @@
 package com.pjh.todoapp.Handler;
 
-import com.pjh.todoapp.Entity.dto.CMRespDto;
+import com.pjh.todoapp.Entity.CMRespDto;
 import com.pjh.todoapp.Handler.ex.CustomValidationApiException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

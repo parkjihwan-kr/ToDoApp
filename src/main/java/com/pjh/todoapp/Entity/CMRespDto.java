@@ -1,4 +1,4 @@
-package com.pjh.todoapp.Entity.dto;
+package com.pjh.todoapp.Entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
