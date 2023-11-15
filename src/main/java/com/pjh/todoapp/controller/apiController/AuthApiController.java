@@ -3,13 +3,16 @@ package com.pjh.todoapp.controller.apiController;
 import com.pjh.todoapp.Entity.CMRespDto;
 import com.pjh.todoapp.Entity.web.LoginRequestDto;
 import com.pjh.todoapp.Entity.web.SignupRequestDto;
+import com.pjh.todoapp.security.UserDetailsImpl;
 import com.pjh.todoapp.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -47,5 +50,11 @@ public class AuthApiController {
         }
         redirectAttributes.addFlashAttribute("loginSuccess", true);
         return ResponseEntity.status(HttpStatus.SEE_OTHER).header("Location", "/").body("로그인 성공");
+    }
+
+    @GetMapping("/api/user/userInfo")
+    public Long testController(@AuthenticationPrincipal UserDetailsImpl userDetails){
+        Long loginUserId = userDetails.getUser().getId();
+        return loginUserId;
     }
 }

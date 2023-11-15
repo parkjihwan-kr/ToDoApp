@@ -5,13 +5,12 @@ import com.pjh.todoapp.Entity.board.Board;
 import com.pjh.todoapp.Entity.user.User;
 import com.pjh.todoapp.Repository.BoardRepository;
 import com.pjh.todoapp.Repository.UserRepository;
-import com.pjh.todoapp.controller.dto.ResponseUserToDoListDto;
+import com.pjh.todoapp.controller.dto.BoardResponseDto;
+import com.pjh.todoapp.controller.dto.UserResponseToDoListDto;
 import com.pjh.todoapp.security.UserDetailsImpl;
-import com.pjh.todoapp.security.UserDetailsServiceImpl;
 import com.pjh.todoapp.util.ApiRequestException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,42 +23,54 @@ public class BoardService {
     private final BoardRepository boardRepository;
     private final UserRepository userRepository;
     @Transactional
-    public Board 카드추가(Board board, UserDetailsImpl userDetails){
-        // userDetails에 존재하는 것은 로그인한 사용자이고
-        long id = userDetails.getUser().getId();
-        System.out.println("id : "+id);
-        return null;
-    }
-    @Transactional
-    public List<ResponseUserToDoListDto> 모든유저투두카드조회() {
-        List<ResponseUserToDoListDto> todoUserList = new ArrayList<>();
+    public List<UserResponseToDoListDto> 모든유저투두카드조회() {
+        List<UserResponseToDoListDto> userDtoList = new ArrayList<>();
 
         List<User> userList = userRepository.findAll();
 
         for (User user : userList) {
             List<Board> myUserList = boardRepository.findByUser(user);
-            ResponseUserToDoListDto responseUserToDoListDto = new ResponseUserToDoListDto(user.getUsername(), myUserList);
-            todoUserList.add(responseUserToDoListDto);
+
+            // UserResponseDto에 데이터 추가
+            UserResponseToDoListDto userResponseDto = new UserResponseToDoListDto();
+            userResponseDto.setUsername(user.getUsername());
+            userResponseDto.setUserId(user.getId());
+
+            List<BoardResponseDto> boardDtoList = new ArrayList<>();
+            for (Board board : myUserList) {
+                // BoardDto에 데이터 추가
+                BoardResponseDto boardDto = new BoardResponseDto();
+                boardDto.setId(board.getId());
+                boardDto.setTitle(board.getTitle());
+                boardDto.setContents(board.getContents());
+                boardDto.setCreatedAt(board.getCreatedAt());
+
+                boardDtoList.add(boardDto);
+            }
+
+            userResponseDto.setBoardDtoList(boardDtoList);
+            userDtoList.add(userResponseDto);
         }
-        return todoUserList;
+
+        System.out.println("===============유저 투두 리스트 조회==============");
+        for (UserResponseToDoListDto userDto : userDtoList) {
+            System.out.println("Username: " + userDto.getUsername());
+            System.out.println("BoardUserId: " + userDto.getUserId());
+            for (BoardResponseDto boardDto : userDto.getBoardDtoList()) {
+                System.out.println("boardId: " + boardDto.getId());
+                System.out.println("Title: " + boardDto.getTitle());
+                System.out.println("Contents: " + boardDto.getContents());
+                System.out.println("CreatedAt: " + boardDto.getCreatedAt());
+            }
+        }
+
+        return userDtoList;
     }
-
-    //for (Board board : boards) {
-    //String username = board.getUsername();
-    //String title = board.getTitle();
-
-    //todoUserList.computeIfAbsent(username, key -> new ArrayList<>()).add(title);
-    //}
-
-    // userTitles 맵의 모든 필드를 출력
-        /*for (Map.Entry<String, List<String>> entry : userTitles.entrySet()) {
-            String username = entry.getKey();
-            List<String> titles = entry.getValue();
-
-            System.out.println("Username: " + username);
-            System.out.println("Titles: " + titles);
-        }*/
-
+    @Transactional
+    public Board 카드추가(Board board, UserDetailsImpl userDetails){
+        board.setUser(userDetails.getUser());
+        return boardRepository.save(board);
+    }
     @Transactional
     public Board 게시글조회(long id){
         return boardRepository.findById(id)

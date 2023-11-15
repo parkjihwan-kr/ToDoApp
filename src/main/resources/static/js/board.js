@@ -29,22 +29,84 @@ function logout() {
     // 로그 아웃 버튼
 }
 
-function submitForm(key) {
-    var auth = getToken();
-    console.log("submitForm first time!");
-    // 게시글 작성에 대한 js
-    // console.log("auth : ",auth);
-    // auth를 getToken()에 가져가더라도 여기에 못쓰네? 지역변수라서>??
-
-    var titleElement = document.getElementById("addTitle_" + /*[[${entry.key}]]*/ '');
-    console.log("titleElement : ",titleElement);
-    if (!titleElement) {
-        console.error("ID가 'addTitle" + key + "'인 요소를 찾을 수 없습니다.");
+function isAuthenticated(cardUserId) {
+    const token = getToken();
+    //console.log("card User Id : "+userId);
+    console.log("carUserId : "+cardUserId);
+    console.log("token : "+token);
+    // 토큰이 없으면 처리 중단
+    if (!token) {
+        console.error('Authentication token is missing.');
         return;
     }
 
-    var title = titleElement.value;
-    //var contents = $('#contents').val();
+    // 서버 엔드포인트 및 요청 데이터 설정 (필요에 따라 수정)
+    const endpoint = '/api/user/authToken';  // 실제 엔드포인트에 맞게 수정
+    /*const requestData = {
+        // 필요한 요청 데이터 추가
+        // 예: title, contents 등
+    };*/
+
+    // 서버로 AJAX 요청 보내기
+    $.ajax({
+        type: 'POST',
+        url: endpoint,
+        headers: {
+            'Authorization': token,  // 토큰을 헤더에 추가
+            'Content-Type': 'application/json',
+        },
+        //data: JSON.stringify(requestData),  // 필요에 따라 데이터를 JSON 형태로 변환
+    }).done(response => {
+        console.log('authentication successfully:', response);
+        getForUserInfo(token, cardUserId);
+        // getForUserInfo
+        // 사용자 정보 얻기
+    }).fail(error => {
+        console.error('Failed to authentication, try again');
+        console.log("error : ",error);
+        // 요청이 실패한 경우
+    });
+}
+function getForUserInfo(token, cardUserId){
+    $.ajax({
+        type: 'GET',
+        url: '/api/user/userInfo',  // 사용자 정보를 제공하는 엔드포인트에 맞게 수정
+        headers: {
+            'Authorization': token,
+        },
+    }).done(loginUserId => {
+        // console.log('login userId: ', loginUserId);
+        // 로그인 사용자를 server에서 잘 가져옴
+        addCard(loginUserId, cardUserId);
+    }).fail(error => {
+        console.error('Failed to get user details:', error);
+    });
+}
+
+function addCard(loginUserId, cardUserId){
+    console.log("loginUserId : ",loginUserId);
+    console.log("cardUserId : ",cardUserId);
+    if(loginUserId != cardUserId){
+        alert("해당 사용자는 접근 불가능한 카드입니다.");
+        return;
+    }
+    $('#postModal').modal('show');
+    //postModal이 보이고 submitForm으로
+}
+function submitForm(key) {
+    var auth = getToken();
+    console.log("submitForm first time!");
+
+    /*var titleElement = document.getElementById("addTitle_" + [[${entry.key}]] '');*/
+    // 여기 없대
+
+    /*if (!titleElement) {
+        console.error("ID가 'addTitle" + key + "'인 요소를 찾을 수 없습니다.");
+        return;
+    }*/
+
+    var title = $('#title').val();
+    var contents = $('#contents').val();
 
     if(!title){
         alert("Title을 입력해주세요.");
@@ -53,9 +115,7 @@ function submitForm(key) {
     // contents는 생략 가능하게 만듦.
     var data = {
         title: title,
-        /*username: username,
-        password: password,
-        contents: contents*/
+        contents: contents
     };
 
     $.ajax({
@@ -64,42 +124,53 @@ function submitForm(key) {
         contentType: 'application/json',
         data: JSON.stringify(data)
     }).done(res => {
-        console.log(title);
-        //console.log(contents);
+        console.log("title : ",title);
+        console.log("contents : ", contents);
         alert("게시글 등록에 성공하셨습니다.");
         window.location.reload();
         //$('#postModal').modal('hide');
     }).fail(err=> {
-        console.log("게시글 등록 성공했다는데 왜..?");
         console.log(err);
     });
 }
-function openDetailsModal(userId) {
-    // 해당 게시글에 대한 상세보기 js
+function openDetailsModal(button) {
     console.log("openDetailsModal method start!");
 
-    console.log("userId : ", userId);
+    var boardId = button.getAttribute('data-board-id');
+    var username = button.getAttribute('data-username');
+
+    console.log("boardId: ", boardId);
+
     $('#detailsModal').modal('show');
-    // AJAX를 사용하여 서버에서 데이터 가져오기
+
     $.ajax({
         type: 'GET',
-        url: `/api/user/${userId}`,
+        url: `/api/user/${boardId}`,
         contentType: 'application/json'
-    }).done(function(user) {
-        // 성공 시 처리
-        $('#modalTitle').text(user.title);
-        $('#modalUsername').text(user.username);
-        $('#modalContents').text(user.contents);
+    }).done(function(board) {
+        console.log(board);
 
-        // createdDate를 형식화하여 표시
-        var createdDate = new Date(user.createdDate);
-        var formattedDate = createdDate.toLocaleString(); // 더 적절한 형식으로 변환할 수 있습니다.
-        $('#modalCreateDate').text(formattedDate);
+        $('#modalUsername').text(username);
+        $('#modalTitle').text(board.title);
+        $('#modalContents').text(board.contents);
+
+        var createdAt = new Date(board.createdAt);
+        console.log(createdAt);
+        // 작동
+        var formattedDate = createdAt.getFullYear() + '-' +
+            ('0' + (createdAt.getMonth() + 1)).slice(-2) + '-' +
+            ('0' + createdAt.getDate()).slice(-2) + ' ' +
+            ('0' + createdAt.getHours()).slice(-2) + ':' +
+            ('0' + createdAt.getMinutes()).slice(-2) + ':' +
+            ('0' + createdAt.getSeconds()).slice(-2);
+        // 날짜 포멧팅
+
+        $('#modalCreatedAt').text(formattedDate);
     }).fail(function(xhr, status, error) {
-        // 오류 시 처리
         console.log(err);
     });
 }
+
 
 function openUpdateModal(userId) {
     // 해당 게시글의 수정 모달 열기 js
