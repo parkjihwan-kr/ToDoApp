@@ -53,7 +53,7 @@ public class AuthApiController {
     }
 
     @GetMapping("/api/user/userInfo")
-    public Long testController(@AuthenticationPrincipal UserDetailsImpl userDetails){
+    public Long returnUserInfo(@AuthenticationPrincipal UserDetailsImpl userDetails){
         Long loginUserId = userDetails.getUser().getId();
         return loginUserId;
     }

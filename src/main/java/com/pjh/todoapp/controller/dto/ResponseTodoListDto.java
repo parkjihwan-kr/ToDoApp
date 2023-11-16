@@ -1,6 +1,5 @@
 package com.pjh.todoapp.controller.dto;
 
-import com.pjh.todoapp.Entity.board.Board;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -8,15 +7,15 @@ import java.util.List;
 
 @Getter
 @Setter
-public class UserResponseToDoListDto {
+public class ResponseTodoListDto {
     private String username;
     private long userId;
     private List<BoardResponseDto> boardDtoList;
 
-    public UserResponseToDoListDto(){
+    public ResponseTodoListDto(){
 
     }
-    public UserResponseToDoListDto(List<BoardResponseDto> boardDtoList){
+    public ResponseTodoListDto(List<BoardResponseDto> boardDtoList){
         this.boardDtoList = boardDtoList;
     }
 }

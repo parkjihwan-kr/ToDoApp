@@ -6,7 +6,7 @@ import com.pjh.todoapp.Entity.user.User;
 import com.pjh.todoapp.Repository.BoardRepository;
 import com.pjh.todoapp.Repository.UserRepository;
 import com.pjh.todoapp.controller.dto.BoardResponseDto;
-import com.pjh.todoapp.controller.dto.UserResponseToDoListDto;
+import com.pjh.todoapp.controller.dto.ResponseTodoListDto;
 import com.pjh.todoapp.security.UserDetailsImpl;
 import com.pjh.todoapp.util.ApiRequestException;
 import jakarta.persistence.EntityNotFoundException;
@@ -23,8 +23,8 @@ public class BoardService {
     private final BoardRepository boardRepository;
     private final UserRepository userRepository;
     @Transactional
-    public List<UserResponseToDoListDto> 모든유저투두카드조회() {
-        List<UserResponseToDoListDto> userDtoList = new ArrayList<>();
+    public List<ResponseTodoListDto> 모든유저투두카드조회() {
+        List<ResponseTodoListDto> userDtoList = new ArrayList<>();
 
         List<User> userList = userRepository.findAll();
 
@@ -32,7 +32,7 @@ public class BoardService {
             List<Board> myUserList = boardRepository.findByUser(user);
 
             // UserResponseDto에 데이터 추가
-            UserResponseToDoListDto userResponseDto = new UserResponseToDoListDto();
+            ResponseTodoListDto userResponseDto = new ResponseTodoListDto();
             userResponseDto.setUsername(user.getUsername());
             userResponseDto.setUserId(user.getId());
 
@@ -51,19 +51,6 @@ public class BoardService {
             userResponseDto.setBoardDtoList(boardDtoList);
             userDtoList.add(userResponseDto);
         }
-
-        System.out.println("===============유저 투두 리스트 조회==============");
-        for (UserResponseToDoListDto userDto : userDtoList) {
-            System.out.println("Username: " + userDto.getUsername());
-            System.out.println("BoardUserId: " + userDto.getUserId());
-            for (BoardResponseDto boardDto : userDto.getBoardDtoList()) {
-                System.out.println("boardId: " + boardDto.getId());
-                System.out.println("Title: " + boardDto.getTitle());
-                System.out.println("Contents: " + boardDto.getContents());
-                System.out.println("CreatedAt: " + boardDto.getCreatedAt());
-            }
-        }
-
         return userDtoList;
     }
     @Transactional
@@ -82,13 +69,6 @@ public class BoardService {
 
         Board userEntity = boardRepository.findById(id)
                 .orElseThrow(() -> new ApiRequestException("게시글을 찾을 수 없습니다.", HttpStatus.NOT_FOUND));
-
-        //System.out.println("userEntity.getPassword()"+userEntity.getPassword()+" user.getPassword() : "+user.getPassword());
-
-        /*if (!userEntity.getPassword().equals(user.getPassword())) {
-            throw new ApiRequestException("비밀번호가 일치하지 않습니다.", HttpStatus.UNAUTHORIZED);
-        }*/
-
         userEntity.setTitle(user.getTitle());
         userEntity.setContents(user.getContents());
         //user.setCreatedDate(user.getCreatedDate());
@@ -96,21 +76,8 @@ public class BoardService {
         return userEntity;
     }
     @Transactional
-    public void 게시글삭제(Board user, long id) {
-        Optional<Board> userOptional = boardRepository.findById(id);
-
-        if (userOptional.isPresent()) {
-            Board userInDatabase = userOptional.get();
-            //String userPassword = userInDatabase.getPassword();
-
-            /*if (userPassword.equals(user.getPassword())) {
-                boardRepository.deleteById(id);
-            } else {
-                throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
-            }*/
-        } else {
-            throw new EntityNotFoundException("해당 ID의 게시글을 찾을 수 없습니다: " + id);
-        }
+    public void 게시글삭제(long boardId) {
+        boardRepository.deleteById(boardId);
     }
 }
 

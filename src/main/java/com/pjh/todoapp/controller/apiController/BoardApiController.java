@@ -1,7 +1,6 @@
 package com.pjh.todoapp.controller.apiController;
 
 import com.pjh.todoapp.Entity.board.Board;
-import com.pjh.todoapp.controller.dto.BoardDeleteDto;
 import com.pjh.todoapp.controller.dto.BoardPostDto;
 import com.pjh.todoapp.controller.dto.BoardUpdateDto;
 import com.pjh.todoapp.security.UserDetailsImpl;
@@ -37,25 +36,25 @@ public class BoardApiController {
         return boardService.게시글조회(id);
     }
 
-    @PutMapping("/user/{id}")
+    @PutMapping("/user/{boardId}")
     //@ResponseBody
     public ResponseEntity<?> updatePost(
-            @PathVariable int id,
+            @PathVariable int boardId,
             @RequestBody BoardUpdateDto boardUpdateDto){
         try {
-            Board updatedUser = boardService.게시글수정(id, boardUpdateDto.toEntity());
+            Board updatedUser = boardService.게시글수정(boardId, boardUpdateDto.toEntity());
             return new ResponseEntity<>(updatedUser, HttpStatus.OK);
         } catch (ApiRequestException ex) {
             return new ResponseEntity<>(ex.getMessage(), ex.getHttpStatus());
         }
     }
 
-    @DeleteMapping("/user/{id}")
+    @DeleteMapping("/user/{boardId}")
     public ResponseEntity<?> deletePost(
-            @PathVariable int id,
-            @RequestBody BoardDeleteDto boardDeleteDto){
+            @PathVariable int boardId){
+        System.out.println("여긴 문제가 아닌거 같은데?");
         try {
-            boardService.게시글삭제(boardDeleteDto.toEntity(), id);
+            boardService.게시글삭제(boardId);
             return new ResponseEntity<>("게시물이 성공적으로 삭제되었습니다.", HttpStatus.OK);
         } catch (ApiRequestException ex) {
             return new ResponseEntity<>(ex.getMessage(), ex.getHttpStatus());

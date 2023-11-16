@@ -1,18 +1,24 @@
 let host = 'http://' + window.location.host;
-let updateUserId;  // 전역 변수로 선언
+let modalUserId = 0;
+// 해당 변수는 openDetailsModal메서드의 boardUserId부분 해결을 위해
+let modalBoardId = 0;
+
+let CRUD = [1,2,3,4];
+// 해당 변수는 addCard() : 2, updateCard() : 3, deleteCard() : 4
 
 $(document).ready(function() {
     const auth = getToken();
-    //console.log("auth : ",auth);
+    // view 생성시 토큰 생성
     $('#updateButton').on('click', updateModal);
     $('#deleteButton').on('click', deleteModal);
-    // 해당 버튼 클릭시 모달을 열어줍니다.
 });
 
+// 업데이트 버튼 클릭에 대한 처리
 
 function getToken() {
     let auth = Cookies.get('Authorization');
     // 나 인증된 사용자인지?
+
     console.log("Is Authenticated:", auth);
     // BEARER~~~~
     if(auth === undefined) {
@@ -29,11 +35,16 @@ function logout() {
     // 로그 아웃 버튼
 }
 
-function isAuthenticated(cardUserId) {
+function isAuthenticated(userId, crudToken) {
+    console.log("userId : "+userId);
+
     const token = getToken();
-    //console.log("card User Id : "+userId);
-    console.log("carUserId : "+cardUserId);
+    //console.log("isAuthenticated()'s cardUserId : "+cardUserId);
     console.log("token : "+token);
+    console.log("crudToken : "+crudToken);
+    console.log("boardId : "+modalBoardId);
+    //console.log("userBoardId : ",userBoardId);
+
     // 토큰이 없으면 처리 중단
     if (!token) {
         console.error('Authentication token is missing.');
@@ -42,10 +53,6 @@ function isAuthenticated(cardUserId) {
 
     // 서버 엔드포인트 및 요청 데이터 설정 (필요에 따라 수정)
     const endpoint = '/api/user/authToken';  // 실제 엔드포인트에 맞게 수정
-    /*const requestData = {
-        // 필요한 요청 데이터 추가
-        // 예: title, contents 등
-    };*/
 
     // 서버로 AJAX 요청 보내기
     $.ajax({
@@ -58,7 +65,11 @@ function isAuthenticated(cardUserId) {
         //data: JSON.stringify(requestData),  // 필요에 따라 데이터를 JSON 형태로 변환
     }).done(response => {
         console.log('authentication successfully:', response);
-        getForUserInfo(token, cardUserId);
+        if(modalUserId == 0){
+            getForUserInfo(token, userId, crudToken);
+        }else{
+            getForUserInfo(token, modalUserId, crudToken);
+        }
         // getForUserInfo
         // 사용자 정보 얻기
     }).fail(error => {
@@ -67,7 +78,7 @@ function isAuthenticated(cardUserId) {
         // 요청이 실패한 경우
     });
 }
-function getForUserInfo(token, cardUserId){
+function getForUserInfo(token, cardUserId, crudToken){
     $.ajax({
         type: 'GET',
         url: '/api/user/userInfo',  // 사용자 정보를 제공하는 엔드포인트에 맞게 수정
@@ -77,10 +88,31 @@ function getForUserInfo(token, cardUserId){
     }).done(loginUserId => {
         // console.log('login userId: ', loginUserId);
         // 로그인 사용자를 server에서 잘 가져옴
-        addCard(loginUserId, cardUserId);
+        methodSelection(loginUserId, cardUserId, crudToken);
+        // 의외로 여기가 문제네? 여기서 addCard와 updateCard, deleteCard를 나누는 방법..?
     }).fail(error => {
         console.error('Failed to get user details:', error);
     });
+}
+function methodSelection(loginUserId, cardUserId, crudToken){
+    console.log("methodSelection CardUserId : ", cardUserId);
+    console.log("loginUserId : ", loginUserId);
+    console.log("boardId : "+modalBoardId);
+    console.log("crudToken : ", crudToken);
+    // user는 cardUserId는 1,2,3
+    if(crudToken == CRUD[0]){
+        return;
+        // 아직 뭐 넣을지 고민 중
+    }else if(crudToken == CRUD[1]){
+        addCard(loginUserId, cardUserId);
+    }else if(crudToken == CRUD[2]){
+        updateCard(loginUserId, cardUserId);
+    }else if(crudToken == CRUD[3]){
+        deleteCard(loginUserId, cardUserId);
+    }else{
+        alert("잘못된 요청입니다. 다시 시도해주세요.");
+        // 갑자기 여기까지 진전이?
+    }
 }
 
 function addCard(loginUserId, cardUserId){
@@ -135,11 +167,18 @@ function submitForm(key) {
 }
 function openDetailsModal(button) {
     console.log("openDetailsModal method start!");
-
     var boardId = button.getAttribute('data-board-id');
     var username = button.getAttribute('data-username');
+    var userId = button.getAttribute("data-user-id"); // 동적 값 검색
+    // html에서 무조건 가져와야할 userId
 
-    console.log("boardId: ", boardId);
+    console.log("openDetailsModal -> boardId : ", boardId);
+    console.log("openDetailsModal -> username : ", username);
+    console.log("openDetailsModal -> userId : ", userId);
+
+    // var updateBtn = document.getElementById("updateBtn");
+    // updateBtn.setAttribute("data-user-id", userId);
+    // 이것만 있어도되는지 확인
 
     $('#detailsModal').modal('show');
 
@@ -153,7 +192,13 @@ function openDetailsModal(button) {
         $('#modalUsername').text(username);
         $('#modalTitle').text(board.title);
         $('#modalContents').text(board.contents);
+        $('#modalUserId').text(userId);
 
+        // error 1 : 여기서 값을 불러오고 isAuthenticated라인에서 modalId를 불러온다
+        modalUserId = userId;
+        modalBoardId = boardId;
+        console.log("openDetailsModal's modalUserId : "+modalUserId);
+        console.log("openDetailsModal's modalBoardId : "+modalBoardId);
         var createdAt = new Date(board.createdAt);
         console.log(createdAt);
         // 작동
@@ -171,96 +216,95 @@ function openDetailsModal(button) {
     });
 }
 
+function updateCard(loginUserId, cardUserId){
+    console.log("loginUserId : ",loginUserId);
+    console.log("cardUserId : ",cardUserId);
+    if(loginUserId == cardUserId){
+        console.log("해당 사용자는 update, delete 버튼을 사용하실 수 있습니다.");
+        openUpdateModal();
+        modalUserId = 0;
+    }else{
+        console.log("modalUserId : "+modalUserId);
+        alert("해당 사용자는 접근 권한이 없습니다.");
+        window.location.reload();
+    }
+}
 
 function openUpdateModal(userId) {
     // 해당 게시글의 수정 모달 열기 js
-    updateUserId = userId; // userId를 변수에 저장
-    console.log("updateUserId : ", updateUserId);
     $('#updateModal').modal('show');
 }
 function updateModal() {
+    let isFirstTime = true;
     // 해당 게시글의 수정 js
-    console.log("userId: ", updateUserId);
 
     let updateTitleValue = $('#updateTitle').val();
-    let updateUsernameValue = $('#updateUsername').val();
-    let updatePasswordValue = $('#updatePassword').val();
     let updateContentsValue = $('#updateContents').val();
-    /*
-    console.log("updateTitle: ", updateTitleValue);
-    console.log("updateUsername: ", updateUsernameValue);
-    console.log("updatePassword: ",updatePasswordValue);
-    console.log("updateContents: ", updateContentsValue);
-*/
-    if(!updateUsernameValue){
-        alert("Username을 입력해주세요");
-        return;
+    console.log("modalBoardId : "+ modalBoardId);
+    if(!isFirstTime){
+        if(!updateTitleValue){
+            alert("Title를 입력해주세요");
+            return;
+        }
     }
-    if(!updatePasswordValue){
-        alert("Password를 입력해주세요");
-        return;
-    }
-    if(!updateTitleValue){
-        alert("Title를 입력해주세요");
-        return;
-    }
-    // 현재 시간을 생성
     let currentTime = new Date();
     // test
     let data = {
-        updateUsername: updateUsernameValue,
-        updatePassword : updatePasswordValue,
         updateTitle: updateTitleValue,
         updateContents: updateContentsValue,
         createdDate: currentTime.toISOString() // 현재 시간을 ISO 문자열로 변환
     };
 
     console.log(JSON.stringify(data));
+    // 여기는 boardId가 필요해
     $.ajax({
         type: 'PUT',
-        url: `/api/user/${updateUserId}`,
+        url: `/api/user/${modalBoardId}`,
         contentType: 'application/json',
         data: JSON.stringify(data)
     }).done(res => {
         $('#updateModal').modal('hide');
         window.location.reload();
     }).fail(err => {
-        alert("회원 수정에 실패하셨습니다. 비밀번호를 확인해주세요!");
+        alert("회원 수정에 실패하셨습니다!");
+        window.location.reload();
+        isFirstTime = true;
     });
+    // 현재 시간을 생성
 }
 
-function openDeleteModal(userId){
+function deleteCard(loginUserId, cardUserId){
+    console.log("loginUserId : ",loginUserId);
+    console.log("cardUserId : ",cardUserId);
+    if(loginUserId == cardUserId){
+        console.log("해당 사용자는 update, delete 버튼을 사용하실 수 있습니다.");
+        openDeleteModal();
+        modalUserId = 0;
+    }else{
+        alert("해당 사용자는 접근 권한이 없습니다.");
+        window.location.reload();
+    }
+}
+
+function openDeleteModal(){
     // 해당 게시글의 삭제 모달 열기 js
-    deleteUserId = userId; // userId를 변수에 저장
-    console.log("deleteUserId : ",deleteUserId);
     $('#deleteModal').modal('show');
 }
 function deleteModal(){
-    // 해당 게시글의 삭제 js
-    console.log("deleteId?: ", deleteUserId);
-
-    let deletePassword = $('#deletePassword').val();
-
-    console.log("deletePassword: ", deletePassword);
-    if(!deletePassword){
-        alert("Password를 입력해주세요!");
-        return;
-    }
-
-    let data = {
-        deletePassword: deletePassword
-    };
-    console.log(JSON.stringify(data));
+    console.log("modalBoardId : "+modalBoardId);
     $.ajax({
         type: 'DELETE',
-        url: `/api/user/${deleteUserId}`, // 저장한 userId 사용
+        url: `/api/user/${modalBoardId}`, // 저장한 userId 사용
         contentType: 'application/json',
-        data: JSON.stringify(data)
+        //data: JSON.stringify(data)
     }).done(res => {
+        modalUserId = 0;
         $('#deleteModal').modal('hide');
         console.log(res);
         window.location.reload();
     }).fail(err => {
-        alert("게시글 삭제에 실패하셨습니다. 비밀번호를 확인해주세요!");
-       });
+        console.log(err);
+        alert("게시글 삭제에 실패하셨습니다. 다시 시도해주세요!");
+        window.location.reload();
+    });
 }

@@ -67,15 +67,19 @@
                         <p>Username : <span th:text="${userBoard.username}" id="username"></span></p>
                         <div th:each="board : ${userBoard.boardDtoList}">
                             <button class="btn btn-light w-100 mb-1" style="border : 1px solid #e5e5e5"
-                                    th:text="'todoList : ' + ${board.title}"
+                                    th:text="${board.title}"
                                     th:data-board-id="${board.id}"
                                     th:data-username="${userBoard.username}"
+                                    th:data-user-id="${userBoard.userId}"
                                     onclick="openDetailsModal(this)">
                             </button>
                         </div>
-                        <button class="btn btn-primary w-100 mb-1" th:onclick="'isAuthenticated(\'' + ${userBoard.userId} + '\')'">Add your card!</button>
-                        <!--이 버튼을 클릭하면 카드에 숨겨져 있던 form이 나와야되겠네?-->
-                        <!-- 여기서 userId만 가능함-->
+                        <hr/>
+                        <!--<button class="btn btn-primary w-100 mb-1" th:onclick="'isAuthenticated(\'' + ${userBoard.userId} + '\', 2)'">Add your card!</button>-->
+                        <button class="btn btn-primary w-100 mb-1" th:onclick="'isAuthenticated(\'' + ${userBoard.userId} + '\', 2)'">
+                            Add your card!
+                        </button>
+                        <!--1,2,3-->
                         <div id="addCardFormContainer" class="border rounded p-3" style="display: none;">
                             <form id="addCard" method="post" action="/api/user">
                                 <div class="mb-3">
@@ -90,9 +94,57 @@
                                 <!--해당하는 카드의 form이 나와야함-->
                             </form>
                         </div>
+                            <div class="modal fade" id="detailsModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h1 class="modal-title fs-5" id="detailsModalLabel">Details</h1>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="mb-3">
+                                                <label for="modalUserId" class="col-form-label">BoardUserId :</label>
+                                                <span id="modalUserId"></span>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="username" class="col-form-label">Username :</label>
+                                                <span id="modalUsername"></span>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="title" class="col-form-label" >Title :</label>
+                                                <span id="modalTitle"></span>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="contents" class="col-form-label">Contents :</label>
+                                                <span id="modalContents"></span>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="createDate" class="col-form-label">CreateDate:</label>
+                                                <span id="modalCreatedAt" th:text="${#dates.format(createdAt, 'yyyy-MM-dd HH:mm:ss')}"></span>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button class="btn btn-primary"
+                                                    th:onclick="'isAuthenticated(\'' + ${userBoard.userId} + '\', 3)'">
+                                                Update
+                                            </button>
+                                            <button class="btn btn-primary"
+                                                    th:onclick="'isAuthenticated(\'' + ${userBoard.userId} + '\', 4)'">
+                                                    Delete
+                                            </button>
+                                            <!-- 여기 아직 안됨 -->
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                                Close
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
+            <!-- th : todoList 적용 범위 끝-->
         </div>
     </div>
 </div>
@@ -134,57 +186,16 @@
 -->
 <!--게시판 글 작성하기 모달 끝-->
 <!--게시판 글 상세보기 모달-->
-<div class="modal fade" id="detailsModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title fs-5" id="detailsModalLabel">Details</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div class="mb-3">
-                    <label for="username" class="col-form-label">Username :</label>
-                    <span id="modalUsername"></span>
-                </div>
-                <div class="mb-3">
-                    <label for="title" class="col-form-label" >Title :</label>
-                    <span id="modalTitle"></span>
-                </div>
-                <div class="mb-3">
-                    <label for="contents" class="col-form-label">Contents :</label>
-                    <span id="modalContents"></span>
-                </div>
-                <div class="mb-3">
-                    <label for="createDate" class="col-form-label">CreateDate:</label>
-                    <span id="modalCreatedAt" th:text="${#dates.format(createdAt, 'yyyy-MM-dd HH:mm:ss')}"></span>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Update</button>
-                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Delete</button>
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            </div>
-        </div>
-    </div>
-</div>
 <!--게시판 글 상세보기 모달 끝-->
 <!--게시판 글 수정하기 모달-->
 <div class="modal fade" id="updateModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h1 class="modal-title fs-5" id="updateModalLabel">Update</h1>
+                <h1 class="modal-title fs-5" id="updateModalLabel">Update your card</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <div class="mb-3">
-                    <label for="updateUsername" class="col-form-label">Username :</label>
-                    <input type="text" class="form-control" id="updateUsername" required/>
-                </div>
-                <div class="mb-3">
-                    <label for="updatePassword" class="col-form-label">Password :</label>
-                    <input type="password" class="form-control" id="updatePassword" placeholder="If your password doesn't match, the post won't be modified." required/>
-                </div>
                 <div class="mb-3">
                     <label for="updateTitle" class="col-form-label">Title:</label>
                     <input type="text" class="form-control" id="updateTitle" required/>
@@ -213,18 +224,9 @@
                 <h1 class="modal-title fs-5" id="deleteModalLabel">DELETE YOUR POSTING?</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body">
-                <form>
-                    <div class="mb-3">
-                        <label for="deletePassword" class="col-form-label">Input your password :</label>
-                        <input type="password" class="form-control" id="deletePassword" required/>
-                    </div>
-                </form>
-            </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" id="deleteButton">Delete</button>
-                <!--비밀번호 입력을 한 후, 모달에서 입력에 대한 정보를 ajax통신으로 spring boot, db에 있는지 확인 후 조치-->
+                <button type="button" class="btn btn-warn" id="deleteButton">Delete</button>
             </div>
         </div>
     </div>

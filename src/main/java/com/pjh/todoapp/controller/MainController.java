@@ -1,6 +1,6 @@
 package com.pjh.todoapp.controller;
 
-import com.pjh.todoapp.controller.dto.UserResponseToDoListDto;
+import com.pjh.todoapp.controller.dto.ResponseTodoListDto;
 import com.pjh.todoapp.security.UserDetailsImpl;
 import com.pjh.todoapp.service.BoardService;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +21,7 @@ public class MainController {
     @GetMapping({"/","/board/index"})
     public String showMainPage(Model model,
                                @AuthenticationPrincipal UserDetailsImpl userDetails){
-        List<UserResponseToDoListDto> todoUserList = boardService.모든유저투두카드조회();
+        List<ResponseTodoListDto> todoUserList = boardService.모든유저투두카드조회();
 
         model.addAttribute("todoUserList", todoUserList);
         model.addAttribute("loginUsername", userDetails.getUser().getUsername());
