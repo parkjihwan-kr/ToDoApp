@@ -4,15 +4,27 @@ let modalUserId = 0;
 let modalBoardId = 0;
 
 let CRUD = [1,2,3,4];
-// 해당 변수는 addCard() : 2, updateCard() : 3, deleteCard() : 4
+// 해당 변수는 인증된 사용자만이 사용할 수 있는 메서드로 구성되어져있습니다.
+// buttonAuthenticated() : 1, addCard() : 2, updateCard() : 3, deleteCard() : 4
 
 $(document).ready(function() {
     const auth = getToken();
     // view 생성시 토큰 생성
     $('#updateButton').on('click', updateModal);
     $('#deleteButton').on('click', deleteModal);
-});
 
+    $('#updateCloseButton').on('click', function() {
+        location.reload();
+    });
+
+    $('#deleteCloseButton').on('click', function() {
+        location.reload();
+    });
+
+    $('#commentsCloseButton').on('click', function() {
+        location.reload();
+    });
+});
 // 업데이트 버튼 클릭에 대한 처리
 
 function getToken() {
@@ -101,8 +113,7 @@ function methodSelection(loginUserId, cardUserId, crudToken){
     console.log("crudToken : ", crudToken);
     // user는 cardUserId는 1,2,3
     if(crudToken == CRUD[0]){
-        return;
-        // 아직 뭐 넣을지 고민 중
+        buttonAuthenticated(loginUserId, cardUserId);
     }else if(crudToken == CRUD[1]){
         addCard(loginUserId, cardUserId);
     }else if(crudToken == CRUD[2]){
@@ -112,6 +123,63 @@ function methodSelection(loginUserId, cardUserId, crudToken){
     }else{
         alert("잘못된 요청입니다. 다시 시도해주세요.");
         // 갑자기 여기까지 진전이?
+    }
+}
+
+function testCheckbox(loginUserId, cardUserId) {
+    // 사용자가 인증되지 않았으므로 체크박스를 비활성화
+    var checkbox = document.getElementById("flexSwitchCheckDefault");
+    if(loginUserId == cardUserId){
+        checkbox.disabled = false;
+    }else{
+        checkbox.disabled = true;
+    }
+}
+
+function buttonAuthenticated(loginUserId, cardUserId){
+    if(loginUserId != cardUserId){
+        testCheckbox(loginUserId, cardUserId);
+        alert("해당 유저는 접근 불가능한 todoList입니다.");
+        return;
+    }
+
+    console.log("해당 유저는 접근 가능한 todoList입니다.");
+    handleCheckboxChange(loginUserId, cardUserId);
+}
+
+function handleCheckboxChange(loginUserId, cardUserId){
+    console.log("handleCheckboxChange() start!");
+    // 이거까지 되는데
+
+    var checkbox = document.getElementById("flexSwitchCheckDefault");
+    var isChecked = checkbox.checked;
+
+    console.log(isChecked);
+
+    if(isChecked){
+        $.ajax({
+            type: 'POST',
+            url: `/api/user/${modalBoardId}/checks`,
+            contentType: 'application/json'
+        }).done(res =>{
+            console.log(res);
+            // 정상적으로 보내짐
+            // checkbox받는 형식 찾아보고 이를 server에 setStatus로 변경해주면 될듯? 싶은데?
+        }).fail(err =>{
+            console.log(err);
+        });
+    }else{
+        $.ajax({
+            type: 'DELETE',
+            url: `/api/user/${modalBoardId}/checks`,
+            contentType: 'application/json'
+        }).done(res =>{
+            console.log(res);
+            // 정상적으로 보내짐
+            // checkbox받는 형식 찾아보고 이를 server에 setStatus로 변경해주면 될듯? 싶은데?
+        }).fail(err =>{
+            console.log(err);
+        });
     }
 }
 
@@ -128,14 +196,6 @@ function addCard(loginUserId, cardUserId){
 function submitForm(key) {
     var auth = getToken();
     console.log("submitForm first time!");
-
-    /*var titleElement = document.getElementById("addTitle_" + [[${entry.key}]] '');*/
-    // 여기 없대
-
-    /*if (!titleElement) {
-        console.error("ID가 'addTitle" + key + "'인 요소를 찾을 수 없습니다.");
-        return;
-    }*/
 
     var title = $('#title').val();
     var contents = $('#contents').val();
@@ -196,6 +256,7 @@ function openDetailsModal(button) {
 
         // error 1 : 여기서 값을 불러오고 isAuthenticated라인에서 modalId를 불러온다
         modalUserId = userId;
+        // 내가 buttonAuthenticated(), addCard 등등에 쓸 내용들
         modalBoardId = boardId;
         console.log("openDetailsModal's modalUserId : "+modalUserId);
         console.log("openDetailsModal's modalBoardId : "+modalBoardId);
@@ -306,5 +367,41 @@ function deleteModal(){
         console.log(err);
         alert("게시글 삭제에 실패하셨습니다. 다시 시도해주세요!");
         window.location.reload();
+    });
+}
+
+function openCommentsModal() {
+    console.log("openCommentsModal() : ");
+    console.log("modalBoardId : "+modalBoardId);
+    // 해당 게시글의 수정 모달 열기 js
+    $('#commentsModal').modal('show');
+}
+
+function submitCommentsForm(){
+    console.log("submitCommentsForm first time!");
+    var content = $('#comments').val();
+
+    console.log("comments : "+content);
+    if(!content){
+        alert("Comments을 입력해주세요.");
+        return;
+    }
+    // contents는 생략 가능하게 만듦.
+    var data = {
+        content: content
+    };
+
+    $.ajax({
+        type: 'POST',
+        url: `/api/user/comments/${modalBoardId}`,
+        contentType: 'application/json',
+        data: JSON.stringify(data)
+    }).done(res => {
+        console.log("comments : ", content);
+        alert("댓글 작성에 성공하셨습니다.");
+        window.location.reload();
+        //$('#postModal').modal('hide');
+    }).fail(err=> {
+        console.log(err);
     });
 }

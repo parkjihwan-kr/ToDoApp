@@ -44,7 +44,8 @@ public class BoardService {
                 boardDto.setTitle(board.getTitle());
                 boardDto.setContents(board.getContents());
                 boardDto.setCreatedAt(board.getCreatedAt());
-
+                // boardDto.setCheckState(board.get);
+                // 해당 값은 default값으로 false 설정
                 boardDtoList.add(boardDto);
             }
 

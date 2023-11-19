@@ -102,6 +102,10 @@
                                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                         </div>
                                         <div class="modal-body">
+                                            <div class="mb-3 form-check form-switch d-flex align-items-center">
+                                                <!--<label class="form-check-label" for="flexSwitchCheckDefault">check box</label>-->
+                                                <input class="form-check-input ms-auto" type="checkbox" id="flexSwitchCheckDefault" th:onchange="'isAuthenticated(\'' + ${userBoard.userId} + '\', 1)'">
+                                            </div>
                                             <div class="mb-3">
                                                 <label for="modalUserId" class="col-form-label">BoardUserId :</label>
                                                 <span id="modalUserId"></span>
@@ -124,6 +128,10 @@
                                             </div>
                                         </div>
                                         <div class="modal-footer">
+                                            <button class="btn btn-primary"
+                                                    th:onclick="openCommentsModal()">
+                                                Open Comments form
+                                            </button>
                                             <button class="btn btn-primary"
                                                     th:onclick="'isAuthenticated(\'' + ${userBoard.userId} + '\', 3)'">
                                                 Update
@@ -207,7 +215,7 @@
 
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="updateCloseButton">Close</button>
                 <button type="button" class="btn btn-primary" id="updateButton">UpdatePost</button>
                 <!--입력을 한 후, 모달에서 비밀번호가 틀리면 오류, 비밀번호가 맞으면 입력 내용에 대하여 ajax통신으로
                 spring boot와 db에 해당하는 내역 수정-->
@@ -225,9 +233,33 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="deleteCloseButton">Close</button>
                 <button type="button" class="btn btn-warn" id="deleteButton">Delete</button>
             </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="commentsModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form id="commentsForm" method="post" action="/api/user/comments">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="commentsModalLabel">Update your card</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <div class="mb-3">
+                            <label for="comments" class="col-form-label">Comments:</label>
+                            <input type="text" class="form-control" id="comments" required/>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="commentsCloseButton">Close</button>
+                    <button type="button" class="btn btn-primary" onclick="submitCommentsForm()">Comments</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>

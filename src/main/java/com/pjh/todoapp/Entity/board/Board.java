@@ -29,6 +29,9 @@ public class Board extends TimeStamped {
 
     private String contents;
 
+    private boolean checkState;
+    // 해당 todo의 완료 상태
+
     public Board(String title, String contents){
         this.title = title;
         this.contents = contents;

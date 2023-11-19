@@ -40,6 +40,8 @@ public class User extends TimeStamped {
     private List<Board> boards;
     // user : board = 1 : n 연관관계
     // user는 board게시글을 n개 게시 가능
+    // 이걸 Board board로 바꾸면 큰일날꺼 같은데...?
+    // List<Board> board -> 가져간다치고
 
     public User(String username, String password, String email, UserRoleEnum role) {
         this.username = username;

@@ -9,18 +9,18 @@ public class CustomValidationApiException extends RuntimeException{
     private static final long serialVersionUID = 1L;
     // 객체를 구분할 때
 
-    private Map<String, Object> errorMap;
+    private Map<String, String> errorMap;
 
     public CustomValidationApiException(String message) {
         super(message);
     }
 
-    public CustomValidationApiException(String message, Map<String, Object> errorMap) {
+    public CustomValidationApiException(String message, Map<String, String> errorMap) {
         super(message);
         this.errorMap = errorMap;
     }
 
-    public Map<String, Object> getErrorMap(){
+    public Map<String, String> getErrorMap(){
         return errorMap;
     }
 }
