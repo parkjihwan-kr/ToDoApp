@@ -9,9 +9,9 @@ public interface ChecksRepository extends JpaRepository<Checks, Long> {
 
     @Modifying
     @Query(value = "INSERT INTO checks(boardId, userId, createdAt, completedToDo) values(:boardId, :loginId, now(), true)", nativeQuery = true)
-    int complete(int boardId, long loginId);
+    int complete(long boardId, long loginId);
 
     @Modifying
     @Query(value="DELETE FROM checks WHERE boardId = :boardId AND userId = :loginId", nativeQuery=true)
-    int unComplete(int boardId, long loginId);
+    int unComplete(long boardId, long loginId);
 }

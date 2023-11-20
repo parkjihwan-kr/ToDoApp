@@ -12,12 +12,17 @@ $(document).ready(function() {
     // view 생성시 토큰 생성
     $('#updateButton').on('click', updateModal);
     $('#deleteButton').on('click', deleteModal);
+    $('#completeButton').on('click', completeModal);
 
     $('#updateCloseButton').on('click', function() {
         location.reload();
     });
 
     $('#deleteCloseButton').on('click', function() {
+        location.reload();
+    });
+
+    $('#completeCloseButton').on('click', function() {
         location.reload();
     });
 
@@ -137,17 +142,23 @@ function testCheckbox(loginUserId, cardUserId) {
 }
 
 function buttonAuthenticated(loginUserId, cardUserId){
-    if(loginUserId != cardUserId){
-        testCheckbox(loginUserId, cardUserId);
-        alert("해당 유저는 접근 불가능한 todoList입니다.");
-        return;
+    console.log("loginUserId : "+loginUserId);
+    console.log("cardUserId : "+cardUserId);
+    if(loginUserId == cardUserId){
+        console.log("해당 사용자는 완료버튼을 사용하실 수 있습니다.");
+        openCompleteModal();
+        modalUserId = 0;
+    }else{
+        console.log("modalUserId : "+modalUserId);
+        alert("해당 사용자는 접근 권한이 없습니다.");
+        window.location.reload();
     }
-
-    console.log("해당 유저는 접근 가능한 todoList입니다.");
-    handleCheckboxChange(loginUserId, cardUserId);
 }
 
-function handleCheckboxChange(loginUserId, cardUserId){
+function openCompleteModal() {
+    $('#completeModal').modal('show');
+}
+function completeModal(loginUserId, cardUserId){
     console.log("handleCheckboxChange() start!");
     // 이거까지 되는데
 
@@ -156,31 +167,25 @@ function handleCheckboxChange(loginUserId, cardUserId){
 
     console.log(isChecked);
 
-    if(isChecked){
-        $.ajax({
-            type: 'POST',
-            url: `/api/user/${modalBoardId}/checks`,
-            contentType: 'application/json'
-        }).done(res =>{
-            console.log(res);
-            // 정상적으로 보내짐
-            // checkbox받는 형식 찾아보고 이를 server에 setStatus로 변경해주면 될듯? 싶은데?
-        }).fail(err =>{
-            console.log(err);
-        });
-    }else{
-        $.ajax({
-            type: 'DELETE',
-            url: `/api/user/${modalBoardId}/checks`,
-            contentType: 'application/json'
-        }).done(res =>{
-            console.log(res);
-            // 정상적으로 보내짐
-            // checkbox받는 형식 찾아보고 이를 server에 setStatus로 변경해주면 될듯? 싶은데?
-        }).fail(err =>{
-            console.log(err);
-        });
-    }
+    var ajaxType = isChecked ? 'POST' : 'DELETE';
+
+    $.ajax({
+        type: ajaxType,
+        url: `/api/user/${modalBoardId}/checks`,
+        contentType: 'application/json'
+    }).done(res => {
+        console.log(res);
+        if (isChecked) {
+            checkbox.checked = true;
+        } else {
+            checkbox.checked = false;
+        }
+        $('#completeModal').modal('hide');
+        //window.location.reload();
+    }).fail(err =>{
+        console.log(err);
+        alert("투두 완료에 실패했습니다. 다시 시도해주세요.");
+    });
 }
 
 function addCard(loginUserId, cardUserId){
@@ -248,6 +253,8 @@ function openDetailsModal(button) {
         contentType: 'application/json'
     }).done(function(board) {
         console.log(board);
+
+        fetchComments(boardId);
 
         $('#modalUsername').text(username);
         $('#modalTitle').text(board.title);
@@ -353,6 +360,7 @@ function openDeleteModal(){
 }
 function deleteModal(){
     console.log("modalBoardId : "+modalBoardId);
+
     $.ajax({
         type: 'DELETE',
         url: `/api/user/${modalBoardId}`, // 저장한 userId 사용
@@ -379,7 +387,7 @@ function openCommentsModal() {
 
 function submitCommentsForm(){
     console.log("submitCommentsForm first time!");
-    var content = $('#comments').val();
+    var content = $('#newComment').val();
 
     console.log("comments : "+content);
     if(!content){
@@ -399,9 +407,47 @@ function submitCommentsForm(){
     }).done(res => {
         console.log("comments : ", content);
         alert("댓글 작성에 성공하셨습니다.");
+        updateCommentList(content);
         window.location.reload();
-        //$('#postModal').modal('hide');
     }).fail(err=> {
         console.log(err);
+    });
+}
+
+function updateCommentList(comments) {
+    console.log(comments);
+    // 가져옴
+    var commentsList = $('#commentList');
+    commentsList.empty(); // 기존 댓글을 비우고 새로운 댓글을 추가
+
+    // 새로운 댓글 추가
+    var commentHtml = '<li>' + comments + '</li>';
+    commentsList.append(commentHtml);
+}
+
+function initializeCommentList(comments) {
+    // 서버에서 받은 초기 댓글 목록을 업데이트
+    var commentList = $('#commentList');
+    console.log("comment : "+comments);
+    // 받은 댓글 목록을 반복하여 추가
+    for (var i = 0; i < comments.length; i++) {
+        if (comments[i].content) {
+            var commentHtml = '<li>' + comments[i].content + '</li>';
+            commentList.append(commentHtml);
+        }
+    }
+}
+
+
+function fetchComments(boardId) {
+    console.log("boardId : " +boardId);
+    $.ajax({
+        type: 'GET',
+        url: `/api/user/comments/${boardId}`,
+        contentType: 'application/json'
+    }).done(function (comments) {
+        initializeCommentList(comments);
+    }).fail(function (xhr, status, error) {
+        console.error("Failed to fetch comments:", error);
     });
 }

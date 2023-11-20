@@ -66,13 +66,13 @@ public class BoardApiController {
     }
 
     @PostMapping("/user/{boardId}/checks")
-    public ResponseEntity<?> completeToDo(@PathVariable int boardId, @AuthenticationPrincipal UserDetailsImpl userDetails){
-        checksService.투두완료(boardId, userDetails.getUser().getId());
+    public ResponseEntity<?> completeToDo(@PathVariable long boardId, @AuthenticationPrincipal UserDetailsImpl userDetails){
+        checksService.투두완료(boardId, userDetails.getUser());
         return new ResponseEntity<>(new CMRespDto<>(201, "투두완료!", null),HttpStatus.CREATED);
     }
 
     @DeleteMapping("/user/{boardId}/checks")
-    public ResponseEntity<?> uncompleteToDo(@PathVariable int boardId, @AuthenticationPrincipal UserDetailsImpl userDetails){
+    public ResponseEntity<?> uncompleteToDo(@PathVariable long boardId, @AuthenticationPrincipal UserDetailsImpl userDetails){
         checksService.투두미완료(boardId, userDetails.getUser().getId());
         return new ResponseEntity<>(new CMRespDto<>(200,"투두 미완료", null),HttpStatus.OK);
     }
