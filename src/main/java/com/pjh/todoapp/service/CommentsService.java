@@ -36,7 +36,7 @@ public class CommentsService {
 
         return commentsRepository.save(comments);
     }
-
+    //
     @Transactional
     public void deleteComment(long boardId){
         commentsRepository.deleteById(boardId);
