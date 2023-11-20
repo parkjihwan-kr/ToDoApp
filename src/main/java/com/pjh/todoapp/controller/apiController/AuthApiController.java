@@ -35,7 +35,7 @@ public class AuthApiController {
             }
             return new ResponseEntity<>(new CMRespDto<>(HttpStatus.BAD_REQUEST.value(),"회원가입 실패",errorMap),HttpStatus.BAD_REQUEST);
         }
-        userService.회원가입(signupRequestDto);
+        userService.signup(signupRequestDto);
         return ResponseEntity.status(HttpStatus.SEE_OTHER).header("Location", "/login").body("회원가입 성공");
     }
 

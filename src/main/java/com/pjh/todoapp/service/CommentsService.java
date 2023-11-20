@@ -17,7 +17,7 @@ public class CommentsService {
     private final CommentsRepository commentsRepository;
     private final UserRepository userRepository;
     @Transactional
-    public Comments 댓글남기기(String contents, long boardId, long userId){
+    public Comments saveComments(String contents, long boardId, long userId){
         Board board = new Board();
         board.setId(boardId);
 
@@ -38,7 +38,7 @@ public class CommentsService {
     }
 
     @Transactional
-    public void 댓글삭제(long boardId){
+    public void deleteComment(long boardId){
         commentsRepository.deleteById(boardId);
     }
 }

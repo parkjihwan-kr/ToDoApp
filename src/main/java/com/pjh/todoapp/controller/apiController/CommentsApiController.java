@@ -39,13 +39,13 @@ public class CommentsApiController {
             throw new CustomValidationApiException("유효한 형식이 아닙니다.", errorMap);
         }
         System.out.println("댓글 남기기 controller");
-        Comments comments = commentsService.댓글남기기(requestCommentDto.getContent(), boardId, userDetails.getUser().getId());
+        Comments comments = commentsService.saveComments(requestCommentDto.getContent(), boardId, userDetails.getUser().getId());
         return new ResponseEntity<>(new CMRespDto<>(200,"suceess",comments), HttpStatus.OK);
     }
 
     @DeleteMapping("/user/comments/{boardId}")
     public ResponseEntity<?> commentDelete(@PathVariable long boardId){
-        commentsService.댓글삭제(boardId);
+        commentsService.deleteComment(boardId);
         return new ResponseEntity<>(new CMRespDto<>(1,"댓글 삭제 성공",null), HttpStatus.OK);
     }
 }

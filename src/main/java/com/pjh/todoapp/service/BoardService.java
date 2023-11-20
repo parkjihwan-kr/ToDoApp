@@ -22,8 +22,8 @@ import java.util.*;
 public class BoardService {
     private final BoardRepository boardRepository;
     private final UserRepository userRepository;
-    @Transactional
-    public List<ResponseTodoListDto> 모든유저투두카드조회() {
+
+    public List<ResponseTodoListDto> selectUserToDoList() {
         List<ResponseTodoListDto> userDtoList = new ArrayList<>();
 
         List<User> userList = userRepository.findAll();
@@ -55,18 +55,17 @@ public class BoardService {
         return userDtoList;
     }
     @Transactional
-    public Board 카드추가(Board board, UserDetailsImpl userDetails){
+    public Board addCard(Board board, UserDetailsImpl userDetails){
         board.setUser(userDetails.getUser());
         return boardRepository.save(board);
     }
-    @Transactional
-    public Board 게시글조회(long id){
+    public Board selectPost(long id){
         return boardRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("해당 ID의 게시글을 찾을 수 없습니다: " + id));
     }
 
     @Transactional
-    public Board 게시글수정(long id, Board user){
+    public Board updatePost(long id, Board user){
 
         Board userEntity = boardRepository.findById(id)
                 .orElseThrow(() -> new ApiRequestException("게시글을 찾을 수 없습니다.", HttpStatus.NOT_FOUND));
@@ -77,7 +76,7 @@ public class BoardService {
         return userEntity;
     }
     @Transactional
-    public void 게시글삭제(long boardId) {
+    public void deletePost(long boardId) {
         boardRepository.deleteById(boardId);
     }
 }

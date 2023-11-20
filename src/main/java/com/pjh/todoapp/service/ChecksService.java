@@ -19,7 +19,7 @@ public class ChecksService {
     private final ChecksRepository checksRepository;
     private final BoardRepository boardRepository;
     @Transactional
-    public void 투두완료(long boardId, User user){
+    public void completeToDo(long boardId, User user){
         boardRepository.findById(boardId).orElseThrow(() -> new EntityNotFoundException("해당 ID의 게시글을 찾을 수 없습니다: " + boardId));
         List<Board> boardList= boardRepository.findByUser(user);
         for (Board board : boardList){
@@ -32,7 +32,7 @@ public class ChecksService {
     }
 
     @Transactional
-    public void 투두미완료(long boardId, long loginId){
+    public void unCompleteToDo(long boardId, long loginId){
         System.out.println("삭제");
         checksRepository.unComplete(boardId, loginId);
     }

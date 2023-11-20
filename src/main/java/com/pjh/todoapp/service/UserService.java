@@ -26,7 +26,7 @@ public class UserService {
     // 관리자 권한 부여, 다른 방식으로 관리자 권한을 부여할 예정
 
     @Transactional
-    public void 회원가입(SignupRequestDto signupRequestDto){
+    public void signup(SignupRequestDto signupRequestDto){
         String username = signupRequestDto.getUsername();
         String password = passwordEncoder.encode(signupRequestDto.getPassword());
         Optional<User> checkUsername = userRepository.findByUsername(username);
@@ -62,8 +62,4 @@ public class UserService {
         boardRepository.save(board);
     }
 
-    @Transactional
-    public String addTestCard(){
-        return null;
-    }
 }

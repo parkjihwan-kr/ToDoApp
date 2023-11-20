@@ -21,7 +21,7 @@ public class MainController {
     @GetMapping({"/","/board/index"})
     public String showMainPage(Model model,
                                @AuthenticationPrincipal UserDetailsImpl userDetails){
-        List<ResponseTodoListDto> todoUserList = boardService.모든유저투두카드조회();
+        List<ResponseTodoListDto> todoUserList = boardService.selectUserToDoList();
 
         model.addAttribute("todoUserList", todoUserList);
         model.addAttribute("loginUsername", userDetails.getUser().getUsername());
